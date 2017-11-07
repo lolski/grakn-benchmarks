@@ -1,0 +1,20 @@
+cluster:
+  url: "0.0.0.0:4567"
+  size_list: [1]
+
+client:
+  url_list: ["0.0.0.0"]
+  number: 1
+
+ycsb_repo:
+  path: /Users/dcorapi/Dev/git/YCSB
+  tar: /tmp/07112017_150626/ycsb.tar
+
+threads:
+  load: 40
+  run: 256
+
+data:
+  fieldcount: 10
+  fieldlength: 10
+  records: 9_000_000
