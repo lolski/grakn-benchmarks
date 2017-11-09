@@ -10,7 +10,7 @@ import yaml
 import ycsb
 
 logging.basicConfig()
-logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().setLevel(logging.DEBUG)
 
 
 def mkdir_p(path):

@@ -35,8 +35,8 @@ class YCSB:
             logger.info("Extracting ycsb to {remote_dir}/ycsb".format(remote_dir=remote_dir))
             command = "tar -xvf {remote_dir}/ycsb.tar -C {remote_dir}/ycsb".format(remote_dir=remote_dir)
             stdin, stdout, stderr = client.exec_command(command)
-            self.drain_channel(stdout, True)
-            self.drain_channel(stderr, True)
+            self.drain_channel(stdout, False)
+            self.drain_channel(stderr, False)
         finally:
             client.close()
 
@@ -47,18 +47,22 @@ class YCSB:
         client = self.ssh_client(client_uri, ssh_key, ssh_password, ssh_username)
         try:
             command = "cd /tmp/{execution_id}/ycsb;" \
-                      "bash -l -c \"./bin/ycsb load grakn -P workloads/workloada " \
-                      "-p grakn.endpoint={cluster_uri} -p grakn.keyspace=ks_{execution_id} " \
-                      "-p recordcount={recordcount} -p fieldcount={fieldcount} -p fieldlength={fieldlength}\"".format(
+                      "bash -l -c \"./bin/ycsb load grakn -P workloads/workloada -s " \
+                      "-p threads={threads} -p grakn.endpoint={cluster_uri} -p grakn.keyspace=ks_{execution_id} " \
+                      "-p recordcount={recordcount} -p fieldcount={fieldcount} -p fieldlength={fieldlength} " \
+                      "-p hdrhistogram.fileoutput=true -p hdrhistogram.output.path=/tmp/hist.log 2>&1 | tee /tmp/graknbench.log \"".format(
                 execution_id=self.execution_id, cluster_uri=cluster_uri, recordcount=data_["records"],
-                fieldcount=data_["fieldcount"], fieldlength=data_["fieldlength"])
+                threads=self.config["threads"]["load"], fieldcount=data_["fieldcount"], fieldlength=data_["fieldlength"])
+            logger.info("Executing benchmark")
+            logger.debug("Command: %s", command)
             stdin, stdout, stderr = client.exec_command(command)
+            with open(os.path.join(self.config['reportpath'], "load.log"), 'w') as x_file:
+                for line in iter(lambda: stdout.readline(2048), ""):
+                    logger.debug(line)
+                    x_file.write(line)
             error = self.drain_channel(stderr)
             if len(error):
                 raise Exception("Error while executing benchmark with command {}, error: \n{}".format(command, error))
-            with open(os.path.join(self.config['reportpath'], "load.log"), 'w') as x_file:
-                for line in stdout:
-                    x_file.write('{}'.format(line))
             logger.info("Executed benchmark, saved in {}", )
 
         finally:
@@ -92,11 +96,11 @@ class YCSB:
         return client_url_list
 
     def run(self):
-        ycsb_tar_file = self.config["ycsb_repo"]["tar"]
+        ycsb_tar_file = self.config["ycsb_repo"].get("tar")
         if not ycsb_tar_file:
             ycsb_tar_file = self.create_tar(os.path.expanduser(self.config["ycsb_repo"]["path"]))
         logger.info("Running YCSB tests with configuration \n -> %s", pprint.pformat(self.config))
-        logger.info("Using YCSB distribution file located at \s", ycsb_tar_file)
+        logger.info("Using YCSB distribution file located at %s", ycsb_tar_file)
         # "As client nodes, the c3.xlarge class of instances (7.5GB RAM, 4 CPU cores)
         # were used to drive the test activity."
         client_urls = self.initialise_clients(ycsb_tar_file)

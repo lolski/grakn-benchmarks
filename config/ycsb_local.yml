@@ -8,7 +8,7 @@ client:
 
 ycsb_repo:
   path: /Users/dcorapi/Dev/git/YCSB
-  tar: /tmp/07112017_150626/ycsb.tar
+#  tar: /tmp/08112017_173657/ycsb.tar
 
 threads:
   load: 40
