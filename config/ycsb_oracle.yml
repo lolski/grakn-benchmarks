@@ -1,14 +1,13 @@
 cluster:
-  url: "0.0.0.0:4567"
+  url: "129.146.78.74:4567"
   size_list: [1]
 
 client:
-  url_list: ["0.0.0.0"]
+  url_list: ["129.146.9.107"]
   number: 1
 
 ycsb_repo:
   path: /Users/dcorapi/Dev/git/YCSB
-#  tar: /tmp/13112017_115756/ycsb.tar
   tar: /Users/dcorapi/Dev/git/YCSB/distribution/target/ycsb-0.14.0-SNAPSHOT.tar.gz
 
 threads:
@@ -18,4 +17,6 @@ threads:
 data:
   fieldcount: 10
   fieldlength: 10
-  records: 100_000
+  records: 500_000 # 9_000_000
+  load: false # true
+  workloads: ["workloadh"] # ["workloada", "workloadc", "workloadh"]

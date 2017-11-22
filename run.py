@@ -1,5 +1,5 @@
 import argparse
-import logging
+import coloredlogs, logging
 import time
 
 import os
@@ -9,8 +9,10 @@ import yaml
 
 import ycsb
 
+coloredlogs.install()
 logging.basicConfig()
 logging.getLogger().setLevel(logging.DEBUG)
+logging.getLogger("paramiko.transport").setLevel(logging.WARNING)
 
 
 def mkdir_p(path):

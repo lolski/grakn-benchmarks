@@ -7,5 +7,5 @@ setup(
     author='Grakn Labs',
     author_email='community@grakn.ai',
     url='https://github.com/graknlabs/grakn-benchmarks',
-    install_requires=['paramiko']
+    install_requires=['paramiko', 'coloredlogs']
 )
