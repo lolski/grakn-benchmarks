@@ -26,7 +26,7 @@ The fields are optional if Python can find the right things in the right places.
 
 ## Important!
 
-The YCSB distribution needs to be configured for Grakn
+The YCSB distribution needs to be configured for Grakn.
 Clone this branch:
 
 ```
@@ -44,7 +44,7 @@ This will take care of compiling and packaging.
 If you have a distribution ready in `/Users/domenico/Dev/git/YCSB/distribution/target/ycsb-0.14.0-SNAPSHOT.tar.gz` use
 
 ```
---ycsb_tar_path  /Users/domenico/Dev/git/YCSB
+--ycsb_tar_path  /Users/domenico/Dev/git/YCSB/distribution/target/ycsb-0.14.0-SNAPSHOT.tar.gz
 ```
 
 
