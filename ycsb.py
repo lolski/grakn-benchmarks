@@ -8,7 +8,6 @@ from multiprocessing import Pool
 import logging
 import tarfile
 
-
 logger = logging.getLogger('ycsb')
 import glob
 
@@ -21,8 +20,11 @@ class YCSB:
 
     def single_initialise_client(self, client_uri, ycsb_tar_file):
         logger.info("Initialising client at %s", client_uri)
-        ssh_ = self.credentials["ssh"]
-        ssh_key, ssh_username, ssh_password = ssh_.get("key"), ssh_.get("username"), ssh_.get("password")
+        ssh_ = self.credentials.get("ssh") if self.credentials else None
+        if ssh_:
+            ssh_key, ssh_username, ssh_password = ssh_.get("key"), ssh_.get("username"), ssh_.get("password")
+        else:
+            ssh_key, ssh_username, ssh_password = None, None, None
         client = None
         try:
             client = self.ssh_client(client_uri, ssh_key, ssh_password, ssh_username)
@@ -31,16 +33,21 @@ class YCSB:
             mkdir_err = self.drain_channel(stderr)
             if len(mkdir_err):
                 raise Exception("Could not create remote directory {}, error: {}".format(remote_dir, mkdir_err))
-            _, file = os.path.split(ycsb_tar_file)
-            logger.info("Copying YCSB distribution to {client_uri}:{remote_dir}/{file} (might take a while)".format(
-                client_uri=client_uri, remote_dir=remote_dir, file=file))
-            ftp_client = client.open_sftp()
-            ftp_client.put(ycsb_tar_file, "{remote_dir}/{file}".format(remote_dir=remote_dir, file=file))
-            ftp_client.close()
-            logger.info("Extracting ycsb to {client_uri}:{remote_dir}/ycsb".format(client_uri=client_uri,
-                                                                                   remote_dir=remote_dir))
-            command = "tar -xf {remote_dir}/{file} -C {remote_dir}/ycsb --strip-components 1".format(
-                remote_dir=remote_dir, file=file)
+            remote_tar_file = self.config["ycsb_repo"]["ycsb_remote_tar_path"]
+            if not remote_tar_file:
+                _, file = os.path.split(ycsb_tar_file)
+                remote_tar_file = "{remote_dir}/{file}".format(remote_dir=remote_dir, file=file)
+                logger.info(
+                    ("Copying YCSB distribution to {client_uri}:" + remote_tar_file + " (might take a while)").format(
+                        client_uri=client_uri))
+                ftp_client = client.open_sftp()
+                ftp_client.put(ycsb_tar_file, remote_tar_file)
+                ftp_client.close()
+            logger.info("Extracting ycsb to from {client_uri}:{remote_tar_file} to {client_uri}:{remote_dir}/ycsb"
+                        .format(client_uri=client_uri, remote_dir=remote_dir, remote_tar_file=remote_tar_file))
+            command = "tar -xf " + remote_tar_file + " -C {remote_dir}/ycsb --strip-components 1".format(
+                remote_dir=remote_dir)
+            logger.info(command)
             stdin, stdout, stderr = client.exec_command(command)
             self.drain_channel(stdout, False)
             error = self.drain_channel(stderr, False)
@@ -62,14 +69,21 @@ class YCSB:
         data_ = self.config["data"]
         try:
             command = "cd /tmp/{execution_id}/ycsb; " \
-                      "bash -l -c \"./bin/ycsb run grakn -P workloads/{workload} -s " \
-                      "-threads {threads} -p grakn.endpoint={cluster_uri} -p grakn.keyspace=ks_{execution_id} " \
-                      "-p recordcount={recordcount} -p fieldcount={fieldcount} -p fieldlength={fieldlength} " \
-                      "-p hdrhistogram.fileoutput=true -p hdrhistogram.output.path=/tmp/hist.log 2>&1 | tee " \
-                      "/tmp/graknbench.log \"".format(
+                      "bash -l -c \"./bin/ycsb run grakn " \
+                      "-P workloads/{workload} -s " \
+                      "-threads {threads} " \
+                      "-p grakn.endpoint={cluster_uri} " \
+                      "-p grakn.keyspace=ks_{execution_id} " \
+                      "-p recordcount={recordcount} " \
+                      "-p operationcount={operationcount} " \
+                      "-p fieldcount={fieldcount} " \
+                      "-p fieldlength={fieldlength} " \
+                      "-p hdrhistogram.fileoutput=true " \
+                      "-p hdrhistogram.output.path=/tmp/hist.log " \
+                      "2>&1 | tee /tmp/graknbench.log \"".format(
                 execution_id=self.execution_id, cluster_uri=cluster_uri, recordcount=data_["records"],
                 threads=self.config["threads"]["run"], fieldcount=data_["fieldcount"], workload=workload,
-                fieldlength=data_["fieldlength"])
+                fieldlength=data_["fieldlength"], operationcount=data_["operations"])
             self.execute_and_monitor_command(client, client_uri, command, results)
             logger.info("Query from %s to %s terminated", client_uri, cluster_uri)
         finally:
@@ -85,14 +99,21 @@ class YCSB:
         data_ = self.config["data"]
         try:
             command = "cd /tmp/{execution_id}/ycsb; " \
-                      "bash -l -c \"./bin/ycsb load grakn -P workloads/{workload} -s " \
-                      "-threads {threads} -p grakn.endpoint={cluster_uri} -p grakn.keyspace=ks_{execution_id} " \
-                      "-p recordcount={recordcount} -p fieldcount={fieldcount} -p fieldlength={fieldlength} " \
-                      "-p hdrhistogram.fileoutput=true -p hdrhistogram.output.path=/tmp/hist.log 2>&1 | tee " \
-                      "/tmp/graknbench.log \"".format(
+                      "bash -l -c \"./bin/ycsb load grakn " \
+                      "-P workloads/{workload} -s " \
+                      "-threads {threads} " \
+                      "-p grakn.endpoint={cluster_uri} " \
+                      "-p grakn.keyspace=ks_{execution_id} " \
+                      "-p recordcount={recordcount} " \
+                      "-p operationcount={operationcount} " \
+                      "-p fieldcount={fieldcount} " \
+                      "-p fieldlength={fieldlength} " \
+                      "-p hdrhistogram.fileoutput=true " \
+                      "-p hdrhistogram.output.path=/tmp/hist.log " \
+                      "2>&1 | tee /tmp/graknbench.log \"".format(
                 execution_id=self.execution_id, cluster_uri=cluster_uri, recordcount=data_["records"],
                 threads=self.config["threads"]["load"], fieldcount=data_["fieldcount"], workload=workload,
-                fieldlength=data_["fieldlength"])
+                fieldlength=data_["fieldlength"], operationcount=data_["operations"])
             self.execute_and_monitor_command(client, client_uri, command, results)
             logger.info("Load from %s to %s terminated", client_uri, cluster_uri)
         finally:
@@ -121,7 +142,8 @@ class YCSB:
         with Pool(processes=len(client_uris)) as pool:
             results = pool.starmap(f, [(uri, cluster_uri, workload) for uri in client_uris])
         js = json.dumps(results)
-        with open(os.path.join(self.config['reportpath'], self.execution_id + "_{}_{}.json".format(name, workload)), 'w') as fp:
+        with open(os.path.join(self.config['reportpath'], self.execution_id + "_{}_{}.json".format(name, workload)),
+                  'w') as fp:
             fp.write(js)
 
     def initialise_cluster(self, cluster_size):
@@ -145,9 +167,11 @@ class YCSB:
 
     def run(self):
         logger.info("Running execution %s", self.execution_id)
-        ycsb_tar_file = self.config["ycsb_repo"].get("tar")
-        if not ycsb_tar_file:
-            ycsb_tar_file = self.create_tar(os.path.expanduser(self.config["ycsb_repo"]["path"]))
+        ycsb_tar_file = None
+        if not self.config["ycsb_repo"].get("ycsb_remote_tar_path"):
+            ycsb_tar_file = self.config["ycsb_repo"].get("ycsb_tar_path")
+            if not ycsb_tar_file:
+                ycsb_tar_file = self.create_tar(os.path.expanduser(self.config["ycsb_repo"]["ycsb_path"]))
         logger.info("Running YCSB tests with configuration \n%s", pprint.pformat(self.config))
         logger.info("Using YCSB distribution file located at %s", ycsb_tar_file)
         # "As client nodes, the c3.xlarge class of instances (7.5GB RAM, 4 CPU cores)
@@ -161,10 +185,12 @@ class YCSB:
             # (30.5 GB RAM, 4 CPU cores, and a single volume of 800 GB of SSD local storage) for the database nodes"
             cluster_url = self.initialise_cluster(cluster_size)
             # Reference paper: non durable writes
-            # We run 3 YCSB workloads, A (Write: 50%, Read: 50%), C (Write: 0%, Read: 100%) and H (Write: 100%, Read: 0%)
             if self.config["data"]["load"]:
+                # We load only once. If you run workloads with inserts, that increases the size!
+                # So run workloade for last if you use workloade
                 self.run_on_all_clients(client_urls, cluster_url, "load", "workloada", self.single_load_data)
             for w in self.config["data"]["workloads"]:
+                # We run 3 YCSB workloads, A (Write: 50%, Read: 50%), C (Write: 0%, Read: 100%) and H (Write: 100%, Read: 0%)
                 logger.info("======= Running workload {} =======".format(w))
                 self.run_on_all_clients(client_urls, cluster_url, "query", w, self.single_query_data)
 

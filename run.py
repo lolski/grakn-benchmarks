@@ -37,6 +37,12 @@ def main():
                         help='Path to the yml file containing the credentials')
     parser.add_argument('--reportpath', type=str, default="reports",
                         help='Path to the directory where reports are stored')
+    parser.add_argument('--ycsb_path', type=str,
+                        help='Path to ycsb code')
+    parser.add_argument('--ycsb_tar_path', type=str,
+                        help='Path to ycsb tar distribution (local). It overrides ycsb_path.')
+    parser.add_argument('--ycsb_remote_tar_path', type=str,
+                        help='Path to ycsb tar distribution (remote, it has to be on all the clients). It overrides ycsb_path.')
     args = parser.parse_args()
 
     config = None
@@ -49,6 +55,8 @@ def main():
 
     mkdir_p(args.reportpath)
     config['reportpath'] = args.reportpath
+    if args.ycsb and (args.ycsb_path or args.ycsb_tar_path or args.ycsb_remote_tar_path):
+        config['ycsb_repo'] = {'ycsb_path': args.ycsb_path, 'ycsb_tar_path': args.ycsb_tar_path, 'ycsb_remote_tar_path': args.ycsb_remote_tar_path}
     credentials = None
     with open(args.credentialspath, 'r') as stream:
         try:
