@@ -35,18 +35,13 @@ pip install -r requirements.txt
 python run.py --configpath config/ycsb_oracle.yml --credentialspath config/.credentials_oracle.yml --ycsb_remote_tar_path /tmp/22112017_151331/ycsb-0.14.0-SNAPSHOT.tar.gz
 ```
 
-Note that you need a config file similar to the example provided.
-
-The credentials file should look like this:
-
+It can automatically find and try public keys located at `~/.ssh/`. Otherwise, you will need a config file similar to `config/credentials_example.yml` which should look like this:
 ```
 ssh:
   username: domenico
   password: somepassword
   key: "/Users/domenico/.ssh/id_rsa"
 ```
-
-The fields are optional if Python can find the right things in the right places.
 
 ## Important!
 
@@ -70,13 +65,3 @@ If you have a distribution ready in `/Users/domenico/Dev/git/YCSB/distribution/t
 ```
 --ycsb_tar_path  /Users/domenico/Dev/git/YCSB/distribution/target/ycsb-0.14.0-SNAPSHOT.tar.gz
 ```
-
-
-# How do I get the dependencies?
-
-You might need to run before
-
-```
-python setup.py install
-```
-
