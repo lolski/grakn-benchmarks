@@ -32,7 +32,7 @@ pip install -r requirements.txt
 # How do I run it?
 
 ```
-python ycsb.py --configpath config/ycsb_oracle.yml --credentialspath config/.credentials_oracle.yml --ycsb_remote_tar_path /tmp/22112017_151331/ycsb-0.14.0-SNAPSHOT.tar.gz
+python run.py --configpath config/ycsb_oracle.yml --credentialspath config/.credentials_oracle.yml --ycsb_remote_tar_path /tmp/22112017_151331/ycsb-0.14.0-SNAPSHOT.tar.gz
 ```
 
 Note that you need a config file similar to the example provided.

@@ -1,3 +1,11 @@
+# Config
+.credentials_oracle.yml
+
+# Run
+reports
+__pycache__
+
+# Intellij
 .idea
 
 # Virtualenv
