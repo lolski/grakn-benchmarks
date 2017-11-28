@@ -14,7 +14,7 @@ brew install pyenv
 pip install --upgrade virtualenv
 ```
 
-Install Python 3.6.3, use it and initialize a `virtualenv` environment in the repo:
+Install Python 3.6.3, use it and initialize a `virtualenv` environment in the directory:
 ```
 cd /path/to/grakn-benchmarks-repo
 pyenv install -l
