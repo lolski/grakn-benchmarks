@@ -5,6 +5,19 @@ It's a Python script that simplifies running YCSB benchmarks on GRAKN.
 This will be extended to 1) run other types of benchmarks 2) automatically resize the cluster and
 execute the tests so to get results on clusters of different sizes
 
+# Installing Prerequisites
+
+```
+sudo easy_install pip
+brew install pyenv
+pyenv install -l
+pyenv install 3.6.3
+pip install --upgrade virtualenv
+eval "$(pyenv init -)"
+virtualenv --system-site-packages -p python3 .
+source bin/activate
+```
+
 # How do I run it?
 
 ```
