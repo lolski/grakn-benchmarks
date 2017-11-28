@@ -7,12 +7,18 @@ execute the tests so to get results on clusters of different sizes
 
 # Installing Prerequisites
 
+Install `pip`, `pyenv`, and `virtualenv`:
 ```
 sudo easy_install pip
 brew install pyenv
+pip install --upgrade virtualenv
+```
+
+Install Python 3.6.3, use it and initialize a `virtualenv` environment in the repo
+```
+cd /path/to/grakn-benchmarks-repo
 pyenv install -l
 pyenv install 3.6.3
-pip install --upgrade virtualenv
 eval "$(pyenv init -)"
 virtualenv --system-site-packages -p python3 .
 source bin/activate
