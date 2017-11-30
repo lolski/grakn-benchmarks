@@ -1,6 +1,6 @@
 cluster:
   # url: "129.146.78.74:4567" # grakn0
-  url: "129.146.18.103:4567" # load balancer
+  url: "129.146.81.170:4567" # load balancer
   size_list: [1]
 
 client:
@@ -16,7 +16,7 @@ client:
 
 threads:
   load: 128 # The reference paper has 40, but we use a fat client and we need more
-  run: 512 # The reference paper has 256, but we use a fat client and we need more
+  run:  512 # The reference paper has 256, but we use a fat client and we need more
 
 data:
   fieldcount: 10

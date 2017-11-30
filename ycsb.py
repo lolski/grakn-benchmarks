@@ -79,8 +79,8 @@ class YCSB:
                       "-p fieldcount={fieldcount} " \
                       "-p fieldlength={fieldlength} " \
                       "-p hdrhistogram.fileoutput=true " \
-                      "-p hdrhistogram.output.path=/tmp/hist.log " \
-                      "2>&1 | tee /tmp/graknbench.log \"".format(
+                      "-p hdrhistogram.output.path=/tmp/hist_{execution_id}.log " \
+                      "2>&1 | tee /tmp/graknbench_{execution_id} \"".format(
                 execution_id=self.execution_id, cluster_uri=cluster_uri, recordcount=data_["records"],
                 threads=self.config["threads"]["run"], fieldcount=data_["fieldcount"], workload=workload,
                 fieldlength=data_["fieldlength"], operationcount=data_["operations"])
@@ -109,8 +109,8 @@ class YCSB:
                       "-p fieldcount={fieldcount} " \
                       "-p fieldlength={fieldlength} " \
                       "-p hdrhistogram.fileoutput=true " \
-                      "-p hdrhistogram.output.path=/tmp/hist.log " \
-                      "2>&1 | tee /tmp/graknbench.log \"".format(
+                      "-p hdrhistogram.output.path=/tmp/hist_{execution_id}.log " \
+                      "2>&1 | tee /tmp/graknbench_{execution_id}.log \"".format(
                 execution_id=self.execution_id, cluster_uri=cluster_uri, recordcount=data_["records"],
                 threads=self.config["threads"]["load"], fieldcount=data_["fieldcount"], workload=workload,
                 fieldlength=data_["fieldlength"], operationcount=data_["operations"])
