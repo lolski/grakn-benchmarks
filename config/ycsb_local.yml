@@ -7,10 +7,16 @@ client:
   number: 1
 
 threads:
-  load: 40
-  run: 256
+  load: 2
+  run: 8
 
 data:
   fieldcount: 10
   fieldlength: 10
-  records: 100_000
+  records: 50
+  operations: 10
+  load: true
+  # Read-mostly workload: workload B: 95% read to 5% update ratio
+  # Read/write combination: workload A: 50% read to 50% update ratio
+  # Read-modify-write: workload F: 50% read to 50% read-modify-write ratio
+  workloads: ["workloadb", "workloada", "workloadf"]
