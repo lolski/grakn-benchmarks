@@ -1,5 +1,6 @@
 # Config
-.credentials_oracle.yml
+config/.credentials_oracle.yml
+config/.credentials_local.yml
 
 # Run
 reports
