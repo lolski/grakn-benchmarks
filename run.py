@@ -53,8 +53,11 @@ def main():
             print(exc)
             exit(-1)
 
-    mkdir_p(args.reportpath)
-    config['reportpath'] = args.reportpath
+    executionid = time.strftime("%d%m%Y_%H%M%S")
+
+    report_dir = os.path.join(args.reportpath, executionid)
+    mkdir_p(report_dir)
+    config['reportpath'] = report_dir
     if args.ycsb and (args.ycsb_path or args.ycsb_tar_path or args.ycsb_remote_tar_path):
         config['ycsb_repo'] = {'ycsb_path': args.ycsb_path, 'ycsb_tar_path': args.ycsb_tar_path, 'ycsb_remote_tar_path': args.ycsb_remote_tar_path}
     credentials = None
@@ -65,7 +68,6 @@ def main():
             print(exc)
             exit(-1)
 
-    executionid = time.strftime("%d%m%Y_%H%M%S")
     ycsb_benchmark = ycsb.YCSB(executionid, config, credentials)
     ycsb_benchmark.run()
 

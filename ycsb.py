@@ -79,8 +79,8 @@ class YCSB:
                       "-p fieldcount={fieldcount} " \
                       "-p fieldlength={fieldlength} " \
                       "-p hdrhistogram.fileoutput=true " \
-                      "-p hdrhistogram.output.path=/tmp/hist_{execution_id}.log " \
-                      "2>&1 | tee /tmp/graknbench_{execution_id} \"".format(
+                      "-p hdrhistogram.output.path=/tmp/{execution_id}/hist.log " \
+                      "2>&1 | tee /tmp/{execution_id}/graknbench.log \"".format(
                 execution_id=self.execution_id, cluster_uri=cluster_uri, recordcount=data_["records"],
                 threads=self.config["threads"]["run"], fieldcount=data_["fieldcount"], workload=workload,
                 fieldlength=data_["fieldlength"], operationcount=data_["operations"])
@@ -109,8 +109,8 @@ class YCSB:
                       "-p fieldcount={fieldcount} " \
                       "-p fieldlength={fieldlength} " \
                       "-p hdrhistogram.fileoutput=true " \
-                      "-p hdrhistogram.output.path=/tmp/hist_{execution_id}.log " \
-                      "2>&1 | tee /tmp/graknbench_{execution_id}.log \"".format(
+                      "-p hdrhistogram.output.path=/tmp/{execution_id}/hist.log " \
+                      "2>&1 | tee /tmp/{execution_id}/graknbench.log \"".format(
                 execution_id=self.execution_id, cluster_uri=cluster_uri, recordcount=data_["records"],
                 threads=self.config["threads"]["load"], fieldcount=data_["fieldcount"], workload=workload,
                 fieldlength=data_["fieldlength"], operationcount=data_["operations"])
@@ -123,7 +123,7 @@ class YCSB:
     def execute_and_monitor_command(self, client, client_uri, command, results):
         logger.debug("Command from %s: %s", client_uri, command)
         stdin, stdout, stderr = client.exec_command(command)
-        with open(os.path.join(self.config['reportpath'], self.execution_id + "_benchmark.log"), 'a') as local_log_file:
+        with open(os.path.join(self.config['reportpath'], "benchmark.log"), 'a') as local_log_file:
             for line in iter(lambda: stdout.readline(2048), ""):
                 if "est completion in" in line or "Return=" in line:
                     logger.info(client_uri + ": " + line.replace("\n", ""))
@@ -142,7 +142,7 @@ class YCSB:
         with Pool(processes=len(client_uris)) as pool:
             results = pool.starmap(f, [(uri, cluster_uri, workload) for uri in client_uris])
         js = json.dumps(results)
-        with open(os.path.join(self.config['reportpath'], self.execution_id + "_{}_{}.json".format(name, workload)),
+        with open(os.path.join(self.config['reportpath'], "{}_{}.json".format(name, workload)),
                   'w') as fp:
             fp.write(js)
 
