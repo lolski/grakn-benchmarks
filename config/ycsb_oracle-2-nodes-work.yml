@@ -1,0 +1,28 @@
+cluster:
+  url: "129.146.153.51:4567" # benchmarks_2nodes_backend_set
+  size_list: [1]
+
+client:
+  url_list: ["129.146.75.110"] # loader1
+  number: 1
+
+#ycsb_repo:
+#  ycsb_path: /Users/dcorapi/Dev/git/YCSB
+#  ycsb_tar_path: /Users/dcorapi/Dev/git/YCSB/distribution/target/ycsb-0.14.0-SNAPSHOT.tar.gz
+#  # Overrides the local tar
+#  ycsb_remote_tar_path: /tmp/22112017_151331/ycsb-0.14.0-SNAPSHOT.tar.gz
+
+threads:
+  load: 128 # The reference paper has 40, but we use a fat client and we need more
+  run:  512 # The reference paper has 256, but we use a fat client and we need more
+
+data:
+  fieldcount: 10
+  fieldlength: 10
+  records: 500_000
+  operations: 100_000 # 9_000_000
+  load: false
+  # Read-mostly workload: workload B: 95% read to 5% update ratio
+  # Read/write combination: workload A: 50% read to 50% update ratio
+  # Read-modify-write: workload F: 50% read to 50% read-modify-write ratio
+  workloads: ["workloadb", "workloada", "workloadf"]
