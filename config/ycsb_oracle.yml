@@ -1,11 +1,9 @@
 cluster:
-  # url: "129.146.78.74:4567" # grakn0
-  url: "129.146.81.170:4567" # load balancer
+  url: "129.146.81.170:4567" # grakn6
   size_list: [1]
 
 client:
-#  url_list: ["129.146.9.107"]
-  url_list: ["129.146.24.94"]
+  url_list: ["129.146.75.110"] # loader1
   number: 1
 
 #ycsb_repo:
