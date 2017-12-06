@@ -11,15 +11,24 @@ Install `pip`, `pyenv`, and `virtualenv`:
 ```
 sudo easy_install pip
 brew install pyenv
-pip install --upgrade virtualenv
 ```
 
-Install Python 3.6.3, use it and initialize a `virtualenv` environment in the directory:
+Install and activate Python 3.6.3
 ```
 cd /path/to/grakn-benchmarks-repo
 pyenv install -l
 pyenv install 3.6.3
+pyenv local 3.6.3
 eval "$(pyenv init -)"
+```
+
+Install `virtualenv`
+```
+pip install --upgrade virtualenv
+```
+
+Initialize a `virtualenv` environment in the directory:
+```
 virtualenv --system-site-packages -p python3 .
 source bin/activate
 ```
