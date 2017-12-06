@@ -6,20 +6,28 @@ This will be extended to 1) run other types of benchmarks 2) automatically resiz
 execute the tests so to get results on clusters of different sizes
 
 # Installing Prerequisites
-
-Install `pip`, `pyenv`, and `virtualenv`:
+Install `pip` and `pyenv`. We use them for managing Python packages and Python versions, respectively.
 ```
 sudo easy_install pip
 brew install pyenv
+```
+
+Install and activate Python 3.6.3. However, any version of Python 3 should work.
+```
+pyenv install -l
+pyenv install 3.6.3
+pyenv local 3.6.3
+eval "$(pyenv init -)"
+```
+
+Install `virtualenv`
+```
 pip install --upgrade virtualenv
 ```
 
-Install Python 3.6.3, use it and initialize a `virtualenv` environment in the directory:
+Initialize a `virtualenv` environment in the directory:
 ```
 cd /path/to/grakn-benchmarks-repo
-pyenv install -l
-pyenv install 3.6.3
-eval "$(pyenv init -)"
 virtualenv --system-site-packages -p python3 .
 source bin/activate
 ```
