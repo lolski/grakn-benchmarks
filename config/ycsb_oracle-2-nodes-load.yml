@@ -1,5 +1,5 @@
 cluster:
-  url: "129.146.81.170:4567" # grakn6
+  url: "129.146.83.237:4567" # grakn7
   size_list: [1]
 
 client:
@@ -25,4 +25,4 @@ data:
   # Read-mostly workload: workload B: 95% read to 5% update ratio
   # Read/write combination: workload A: 50% read to 50% update ratio
   # Read-modify-write: workload F: 50% read to 50% read-modify-write ratio
-  workloads: ["workloadb", "workloada", "workloadf"]
+  workloads: []
